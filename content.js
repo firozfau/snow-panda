@@ -1,6 +1,6 @@
-// Function to remove YouTube ads
-function removeYouTubeAds() {
-  // Selectors for ad elements
+// Function to check for ads and handle them
+function checkAndHandleAds() {
+  // Ad-specific selectors to monitor
   const adSelectors = [
       "#ad-avatar-lockup-card",
       "#ytp-ad-player-overlay-layout",
@@ -15,26 +15,46 @@ function removeYouTubeAds() {
       ".ytp-ad-progress"
   ];
 
-  // Remove all elements matching the selectors
+  // Check if any of the ad elements exist
+  let adFound = false;
   adSelectors.forEach(selector => {
-      const ads = document.querySelectorAll(selector);
-      ads.forEach(ad => ad.remove());
+      const adElement = document.querySelector(selector);
+      if (adElement) {
+          adFound = true;
+          adElement.remove(); // Remove the ad element
+      }
   });
 
-  // Reset the player state
-  const moviePlayer = document.querySelector("#movie_player");
-  if (moviePlayer) {
-      moviePlayer.classList.remove("ad-showing", "ad-interrupting");
+  // Handle ad badge specifically
+  const adBadges = document.querySelectorAll('div[id^="ad-badge"]');
+  if (adBadges.length > 0) {
+      adFound = true;
+      adBadges.forEach(badge => badge.remove());
+  }
+
+  // Handle video ads with display block
+  const videoAds = document.querySelectorAll(".video-ads.ytp-ad-module");
+  videoAds.forEach(videoAd => {
+      if (window.getComputedStyle(videoAd).display === "block") {
+          adFound = true;
+          videoAd.style.display = "none"; // Hide the ad
+      }
+  });
+
+  // If ads were found, reset video player and set duration to skip ad
+  if (adFound) {
+      const videoPlayer = document.querySelector("#movie_player");
+      if (videoPlayer) {
+          videoPlayer.classList.remove("ad-showing", "ad-interrupting");
+
+          // Skip video duration to bypass the ad
+          const video = document.querySelector("video.html5-main-video");
+          if (video) {
+              video.currentTime = video.duration; // Skip to end of ad
+          }
+      }
   }
 }
 
-// Observe DOM changes to dynamically handle ads
-const observer = new MutationObserver(() => {
-  removeYouTubeAds();
-});
-
-// Start observing the body for changes
-observer.observe(document.body, { childList: true, subtree: true });
-
-// Initial call to remove ads
-removeYouTubeAds();
+// Run the check every second
+setInterval(checkAndHandleAds, 1000);
