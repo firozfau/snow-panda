@@ -34,10 +34,13 @@ function checkAndHandleAds() {
 
 
 
-  const adBoxActive = document.querySelectorAll('div[class^="video-ads"]');
-  if (adBoxActive !=undefined) {
-      adFound = true; 
+  const adBoxActive = document.querySelectorAll('div[class*="ytp-ad-player-overlay-layout__player-card-container"]')[0];
+  if(adBoxActive!=undefined){
+    if (adBoxActive.length > 0) {
+        adFound = true; 
+    }
   }
+
 
 
 
@@ -48,11 +51,16 @@ function checkAndHandleAds() {
       if (videoPlayer) {
           videoPlayer.classList.remove("ad-showing", "ad-interrupting");
 
-          // Skip video duration to bypass the ad
           const video = document.querySelector("video.html5-main-video");
-          if (video) {
-              video.currentTime = video.duration; // Skip to end of ad
-          }
+        const videoStream = document.querySelector("video.video-stream");
+        if (video || videoStream) {
+            (video || videoStream).currentTime = (video || videoStream).duration; // Skip to end of ad
+
+            adFound = false; 
+        }
+
+
+
       }
   }
 }
