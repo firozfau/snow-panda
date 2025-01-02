@@ -32,14 +32,15 @@ function checkAndHandleAds() {
       adBadges.forEach(badge => badge.remove());
   }
 
-  // Handle video ads with display block
-  const videoAds = document.querySelectorAll(".video-ads.ytp-ad-module");
-  videoAds.forEach(videoAd => {
-      if (window.getComputedStyle(videoAd).display === "block") {
-          adFound = true;
-          videoAd.style.display = "none"; // Hide the ad
-      }
-  });
+
+
+  const adBoxActive = document.querySelectorAll('div[class^="video-ads"]');
+  if (adBoxActive !=undefined) {
+      adFound = true; 
+  }
+
+
+
 
   // If ads were found, reset video player and set duration to skip ad
   if (adFound) {
