@@ -34,15 +34,24 @@ function checkAndHandleAds() {
 
 
 
-  const adBoxActive = document.querySelectorAll('div[class*="ytp-ad-player-overlay-layout__player-card-container"]')[0];
-  if(adBoxActive!=undefined){
-    if (adBoxActive.length > 0) {
-        adFound = true; 
+  const adPlayerOverlayContainers = document.querySelectorAll('div[class*="ytp-ad-player-overlay-layout__player-card-container"]');
+
+  // Check if the first element exists and is not undefined
+  if (adPlayerOverlayContainers.length > 0 && adPlayerOverlayContainers[0] !== undefined)
+ {
+
+    
+    const video = document.querySelector("video.html5-main-video");
+    const videoStream = document.querySelector("video.video-stream");
+    if (video || videoStream) {
+        (video || videoStream).currentTime = (video || videoStream).duration; // Skip to end of ad
+
+        adFound = false; 
     }
+    
   }
-
-
-
+  else{
+   
 
 
   // If ads were found, reset video player and set duration to skip ad
@@ -62,7 +71,11 @@ function checkAndHandleAds() {
 
 
       }
+
+
   }
+
+}
 }
 
 // Run the check every second
